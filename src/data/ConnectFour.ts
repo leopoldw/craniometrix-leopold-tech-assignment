@@ -4,7 +4,7 @@ import {
   ColumnCountType,
   RowCountType,
   PlayerOrNullType,
-  FixedLengthArray,
+  BoardPositionType,
 } from "../types";
 
 type UpdateUIType = () => void;
@@ -13,10 +13,10 @@ type ConstructorPropsType = {
 };
 
 type BoardSegmentType = [
-  PlayerOrNullType,
-  PlayerOrNullType,
-  PlayerOrNullType,
-  PlayerOrNullType
+  BoardPositionType,
+  BoardPositionType,
+  BoardPositionType,
+  BoardPositionType
 ];
 
 const COLUMNS = 7;
@@ -107,7 +107,8 @@ class ConnectFour {
 
   // to make things easier, allow arbritary numbers but return
   // 'undefined' if out of range from board (different from 'null')
-  getValue = (column: number, row: number): PlayerOrNullType => {
+  // co-ordinates start from top left as (1, 1)
+  getValue = (column: number, row: number): BoardPositionType => {
     return this.board?.[column - 1]?.[row - 1];
   };
 
@@ -140,15 +141,15 @@ class ConnectFour {
   };
 
   // iteration utility
-  times = <P, C extends number>(
-    count: number,
-    func: (index: number) => P
-  ): FixedLengthArray<P, C> => {
-    return [...Array(count)].map((_, index) => func(index)) as FixedLengthArray<
-      P,
-      C
-    >;
-  };
+  //   times = <P, C extends number>(
+  //     count: number,
+  //     func: (index: number) => P
+  //   ): FixedLengthArray<P, C> => {
+  //     return [...Array(count)].map((_, index) => func(index)) as FixedLengthArray<
+  //       P,
+  //       C
+  //     >;
+  //   };
 
   collectAllPossibleWinArrays = (
     column: ColumnCountType,
@@ -163,20 +164,27 @@ class ConnectFour {
     // added to the top (only look down from central chip) - so only one Y axis possibility
     // but only need to look if at least 4 items in that column (row <= ROWS - WIN_LENGTH)
     if (row <= ROWS - WIN_LENGTH) {
-      possibleWinArrays.push([
-        GV(column, row),
-        GV(column, row + 1),
-        GV(column, row + 2),
-        GV(column, row + 3),
-      ]);
+      possibleWinArrays.push(
+        Array.from({ length: 4 }, (_, index) =>
+          GV(column, row + index)
+        ) as BoardSegmentType
+      );
     }
 
     // calculate X-axis winner possibility
     // there's only 4 it could (COLUMN_COUNT - WIN_LENGTH) be so add those to array
-    const XAxis = this.times(4, (rootIndex) => {
-      return this.times(4, (rowIndex) => GV(1 + rootIndex + rowIndex, row));
-    });
+    const XAxis = Array.from(
+      { length: 4 },
+      (_, rootIndex) =>
+        Array.from({ length: 4 }, (_, rowIndex) =>
+          GV(1 + rootIndex + rowIndex, row)
+        ) as BoardSegmentType
+    );
     possibleWinArrays.push(...XAxis);
+
+    // calculate forward-facing diagonal winner possibility
+    // these do not happen if chip fell in top left of bottom right
+    // corner of the board (ie: )
 
     return possibleWinArrays;
   };

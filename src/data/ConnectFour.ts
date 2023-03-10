@@ -31,7 +31,7 @@ class ConnectFour {
   currentPlayer: PlayerOrNullType;
   updateUI: UpdateUIType;
   turnsTaken: number;
-  winnerPlayer: PlayerOrNullType | "STALEMATE";
+  winnerPlayer: "Yellow" | "Red" | "STALEMATE" | null;
 
   constructor({ updateUI }: ConstructorPropsType) {
     this.board = this.createNewBoard();
@@ -115,9 +115,9 @@ class ConnectFour {
   calculateWinCondition = (column: ColumnCountType, row: RowCountType) => {
     // firstly, we don't need to check for any win conditions before one user has
     // taken their 4th  (see formula above in const)
-    // if (this.turnsTaken < NOT_ENOUGH_TURNS_FOR_WIN) {
-    //   return false;
-    // }
+    if (this.turnsTaken < NOT_ENOUGH_TURNS_FOR_WIN) {
+      return false;
+    }
 
     // was going to get fancy with recursion here to
     // see if I could test all permutations across the board
@@ -150,14 +150,11 @@ class ConnectFour {
     // calculate Y-axis winner possibility
     // there can never be an "up" winner possibility as bits are only
     // added to the top (only look down from central chip) - so only one Y axis possibility
-    // but only need to look if at least 4 items in that column (row <= ROWS - WIN_LENGTH)
-    if (row <= ROWS - WIN_LENGTH) {
-      possibleWinArrays.push(
-        Array.from({ length: 4 }, (_, index) =>
-          GV(column, row + index)
-        ) as BoardSegmentType
-      );
-    }
+    possibleWinArrays.push(
+      Array.from({ length: 4 }, (_, index) =>
+        GV(column, row + index)
+      ) as BoardSegmentType
+    );
 
     // calculate X-axis winner possibility
     // there's only 4 it could be (COLUMN_COUNT - WIN_LENGTH)
@@ -222,14 +219,14 @@ class ConnectFour {
     const isWinner = boardSegment.every((chip) => chip === this.currentPlayer);
 
     if (isWinner) {
-      this.winnerPlayer = this.currentPlayer;
+      this.declareWinner();
     }
 
     return isWinner;
   };
 
   declareWinner = () => {
-    this.winnerPlayer = this.currentPlayer;
+    this.winnerPlayer = this.getCurrentPlayerName();
   };
 
   declareStalemate = () => {

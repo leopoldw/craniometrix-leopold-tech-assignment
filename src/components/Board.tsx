@@ -1,7 +1,7 @@
 import Chip from "./Chip";
-import { BoardType, ColumnType, PlayerType, ColumnCountType } from "../types";
+import { BoardType, ColumnType, PlayerType, ColumnCountType, PlayerOrNullType, WinnerPlayerType } from "../types";
 
-export const getColorForPlayer = (player: PlayerType) => {
+export const getColorForPlayer = (player: PlayerOrNullType) => {
     switch (player) {
       case "Y":
         return "border-yellow-300";
@@ -14,13 +14,14 @@ export const getColorForPlayer = (player: PlayerType) => {
 
 type BoardProps = {
   board: BoardType;
-  nextPlayer: PlayerType;
+  currentPlayer: PlayerOrNullType;
+  winnerPlayer: WinnerPlayerType;
   onColumnClick: (column: ColumnCountType) => void;
 };
 
-const Board = ({ board, onColumnClick, nextPlayer }: BoardProps) => (
+const Board = ({ board, onColumnClick, currentPlayer }: BoardProps) => (
   <div className={"inline-block"}>
-    <div className={`bg-blue-800 rounded-2xl p-3 flex border-[10px] ${getColorForPlayer(nextPlayer)}`}>
+    <div className={`bg-blue-800 rounded-2xl p-3 flex border-[10px] ${getColorForPlayer(currentPlayer)}`}>
       {board.map((column: ColumnType, columnIndex: number) => (
         <div className={"px-3 cursor-pointer hover:bg-blue-700"} key={columnIndex} onClick={() => onColumnClick(columnIndex + 1 as ColumnCountType)}>
           {column.map((spot, rowIndex) => (

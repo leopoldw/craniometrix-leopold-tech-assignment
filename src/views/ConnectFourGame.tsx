@@ -18,14 +18,9 @@ const useConnectFour = () => {
 const ConnectFourGame = () => {
   const game = useConnectFour();
 
-  if(game.winnerPlayer) {
-    return (
-        <div onClick={game.resetGame}>{`${game.winnerPlayer} wins!`}</div>
-    )
-  }
-
   return (
     <div>
+        {game.winnerPlayer && <div className={"text-3xl"}>{game.winnerPlayer}</div>}
       <h1 className={"text-3xl text-center font-bold mb-2"}>Connect Four</h1>
       <div
         className={`text-5xl mb-4 text-center font-semibold`}

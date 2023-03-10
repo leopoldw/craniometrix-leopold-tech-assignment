@@ -20,7 +20,7 @@ type BoardSegmentType = [
 ];
 
 const COLUMNS = 7;
-const ROWS = 7;
+const ROWS = 6;
 const WIN_LENGTH = 4;
 const MAX_TURNS_TAKEN = COLUMNS * ROWS; // 42
 const PLAYER_COUNT = 2;
@@ -175,7 +175,7 @@ class ConnectFour {
     // used for both diagonal tracking, determines
     // where to start the forward or backward tracking
     // by considering how high up the chip fell
-    const trackDistance = ROWS - row - 1;
+    const trackDistance = ROWS - row;
 
     // calculate forward-facing diagonal winner possibility
     // there's only 3 it could be (LONGEST DIAGONAL(6) - WIN_LENGTH + 1)
@@ -194,6 +194,7 @@ class ConnectFour {
           )
         ) as BoardSegmentType
     );
+
     possibleWinArrays.push(...forwardFacingAxis);
 
     // calculate backwards-facing diagonal winner possibility
@@ -207,7 +208,7 @@ class ConnectFour {
         Array.from({ length: 4 }, (_, rowIndex) =>
           GV(
             backwardsFacingStartingColumn - rootIndex - rowIndex,
-            ROWS - rootIndex - rowIndex - 1
+            ROWS - rootIndex - rowIndex
           )
         ) as BoardSegmentType
     );
